@@ -20,7 +20,7 @@ ul {
 
 .square {
     background: #fff;
-    border: 1px solid #999;
+    border: 1px solid teal;
     float: left;
     font-size: 24px;
     font-weight: bold;
@@ -31,7 +31,6 @@ ul {
     padding: 0;
     text-align: center;
     width: 34px;
-    color: teal;
 }
 
 .square:focus {
@@ -49,4 +48,12 @@ ul {
 
 .game-info {
     margin-left: 20px;
+}
+
+.symbolX {
+    color: yellowgreen;
+}
+
+.symbolO {
+    color: magenta;
 }

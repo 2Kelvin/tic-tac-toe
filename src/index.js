@@ -10,21 +10,29 @@ function Square(props) {
     )
 }
 
+function X() {
+    return <span className='symbolX'>X</span>
+}
+
+function O() {
+    return <span className='symbolO'>O</span>;
+}
+
 class Board extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            squares: Array(9).fill("null"),
+            squares: Array(9).fill(""),
             xIsNext: true //alternating between player X and player O
         };
     }
 
     handleSquareClick(i) {
         const squares = this.state.squares.slice();
-        squares[i] = this.state.xIsNext ? "X" : "O";
+        squares[i] = this.state.xIsNext ? <X /> : <O />;
         this.setState({
             squares: squares,
-            xIsNext: !this.state.xIsNext
+            xIsNext: !this.state.xIsNext // if player X just played, flip to palyer O
         });
     }
 
@@ -38,7 +46,7 @@ class Board extends React.Component {
     }
 
     render() {
-        const status = 'Next player: X';
+        const status = `Next player: ${this.state.xIsNext ? "X" : "O"} `;
 
         return (
             <div>
