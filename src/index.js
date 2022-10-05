@@ -92,3 +92,5 @@ root.render(<Game />);
 // In JavaScript classes, you need to always call super when defining the constructor of a subclass
 // By calling this.setState from an onClick handler in the Square’s render method, 
 // ...we tell React to re-render that Square whenever its < button > is clicked
+// When you call setState in a component, React automatically updates the child components inside of it too
+// setState updates the value of state, stors it and displays it on the page
