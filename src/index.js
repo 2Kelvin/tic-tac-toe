@@ -3,30 +3,39 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 
 class Square extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            value: null
-        };
-    }
-
     render() {
         return (
             <button
                 className="square"
-                onClick={() => {
-                    this.setState({ value: "X" });
-                }}
+                onClick={() => this.props.squareOnClick()}
             >
-                {this.state.value}
+                {this.props.value}
             </button>
         );
     }
 }
 
 class Board extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            squares: Array(9).fill("null")
+        };
+    }
+
+    handleSquareClick(i) {
+        const squares = this.state.squares.slice();
+        squares[i] = "X";
+        this.setState({ squares: squares });
+    }
+
     renderSquare(i) {
-        return <Square value={i} />;
+        return (
+            <Square
+                value={this.state.squares[i]}
+                squareOnClick={() => this.handleSquareClick(i)}
+            />
+        );
     }
 
     render() {
@@ -94,3 +103,10 @@ root.render(<Game />);
 // ...we tell React to re-render that Square whenever its < button > is clicked
 // When you call setState in a component, React automatically updates the child components inside of it too
 // setState updates the value of state, stors it and displays it on the page
+// To collect data from multiple children, or to have two child components communicate with each other, 
+// ...declare the shared state in their parent component instead.
+// ...The parent component can pass the state back down to the children by using props
+// ...this keeps the child components in sync with each other and with the parent component.
+// array.slice() method creates a new copy array for use to avoid modifying the existing array
+//  in handleClick, we call .slice() to create a copy of the squares array to modify instead of modifying the existing array
+// 
