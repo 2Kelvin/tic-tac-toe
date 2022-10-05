@@ -2,31 +2,30 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 
-class Square extends React.Component {
-    render() {
-        return (
-            <button
-                className="square"
-                onClick={() => this.props.squareOnClick()}
-            >
-                {this.props.value}
-            </button>
-        );
-    }
+function Square(props) {
+    return (
+        <button className='square' onClick={props.squareOnClick}>
+            {props.value}
+        </button>
+    )
 }
 
 class Board extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            squares: Array(9).fill("null")
+            squares: Array(9).fill("null"),
+            xIsNext: true //alternating between player X and player O
         };
     }
 
     handleSquareClick(i) {
         const squares = this.state.squares.slice();
-        squares[i] = "X";
-        this.setState({ squares: squares });
+        squares[i] = this.state.xIsNext ? "X" : "O";
+        this.setState({
+            squares: squares,
+            xIsNext: !this.state.xIsNext
+        });
     }
 
     renderSquare(i) {
@@ -109,4 +108,7 @@ root.render(<Game />);
 // ...this keeps the child components in sync with each other and with the parent component.
 // array.slice() method creates a new copy array for use to avoid modifying the existing array
 //  in handleClick, we call .slice() to create a copy of the squares array to modify instead of modifying the existing array
-// 
+
+// The main benefit of immutability is that it helps you build pure components in React
+// through immutability, determining if changes have been made is easier 
+// ...hence determining if and when a component requires to rerender
