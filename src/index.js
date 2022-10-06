@@ -11,47 +11,18 @@ function Square(props) {
 }
 
 class Board extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            squares: Array(9).fill(null),
-            xIsNext: true //alternating between player X and player O
-        };
-    }
-
-    handleSquareClick(i) {
-        const squares = this.state.squares.slice();
-        if (calculateWinner(squares) || squares[i]) {
-            return;
-        }
-        squares[i] = this.state.xIsNext ? "X" : "O";
-        this.setState({
-            squares: squares,
-            xIsNext: !this.state.xIsNext // if player X just played, flip to palyer O
-        });
-    }
-
     renderSquare(i) {
         return (
             <Square
-                value={this.state.squares[i]}
-                squareOnClick={() => this.handleSquareClick(i)}
+                value={this.props.squares[i]}
+                squareOnClick={() => this.props.onClick(i)}
             />
         );
     }
 
     render() {
-        const gameWinner = calculateWinner(this.state.squares);
-        let status;
-        if (gameWinner) {
-            status = `Winner: ${gameWinner}`;
-        } else {
-            status = `Next player: ${this.state.xIsNext ? "X" : "O"}`;
-        }
-
         return (
             <div>
-                <div className="status">{status}</div>
                 <div className="board-row">
                     {this.renderSquare(0)}
                     {this.renderSquare(1)}
@@ -73,15 +44,68 @@ class Board extends React.Component {
 }
 
 class Game extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            gameHistory: [
+                { squares: Array(9).fill(null) }
+            ],
+            xIsNext: true
+        };
+    }
+
+    handleSquareClick(i) {
+        const history = this.state.gameHistory;
+        const current = history[history.length - 1];
+        const squares = current.squares.slice();
+
+        if (calculateWinner(squares) || squares[i]) {
+            return;
+        }
+
+        squares[i] = this.state.xIsNext ? "X" : "O";
+        this.setState({
+            history: history.concat([
+                { squares: squares }
+            ]),
+            xIsNext: !this.state.xIsNext // if player X just played, flip to palyer O
+        });
+    }
+
     render() {
+        const history = this.state.gameHistory;
+        const current = history[history.length - 1];
+        const gameWinner = calculateWinner(current.squares);
+
+        const moves = history.map((step, move) => {
+            const desc = move ? `Go to move #${move}` : `Go to game start`;
+            return (
+                <li>
+                    <button onClick={() => this.jumpTo(move)}>
+                        {desc}
+                    </button>
+                </li>
+            );
+        });
+
+        let status;
+        if (gameWinner) {
+            status = `Winner: ${gameWinner}`;
+        } else {
+            status = `Next player: ${this.state.xIsNext ? "X" : "O"}`;
+        }
+
         return (
             <div className="game">
                 <div className="game-board">
-                    <Board />
+                    <Board
+                        squares={current.squares}
+                        onClick={(i) => this.handleSquareClick(i)}
+                    />
                 </div>
                 <div className="game-info">
-                    <div>{/* status */}</div>
-                    <ol>{/* TODO */}</ol>
+                    <div>{status}</div>
+                    <ol>{moves}</ol>
                 </div>
             </div>
         );
@@ -102,7 +126,7 @@ class Game extends React.Component {
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<Game />);
 
-function calculateWinner(squares) {
+function calculateWinner(squaresArray) {
     const lines = [
         [0, 1, 2],
         [3, 4, 5],
@@ -115,8 +139,8 @@ function calculateWinner(squares) {
     ];
     for (let i = 0; i < lines.length; i++) {
         const [a, b, c] = lines[i];
-        if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-            return squares[a];
+        if (squaresArray[a] && squaresArray[a] === squaresArray[b] && squaresArray[a] === squaresArray[c]) {
+            return squaresArray[a];
         }
     }
     return null;
@@ -150,3 +174,6 @@ function calculateWinner(squares) {
 // The main benefit of immutability is that it helps you build pure components in React
 // through immutability, determining if changes have been made is easier 
 // ...hence determining if and when a component requires to rerender
+
+// unlike the array.push(), array.concat() does not mutate the original array; 
+// ...it creates a new copy of the array to work with
